@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+
+       <style>
+	   body {
+    display: block;
+    margin: 8px;
+}
+      #content{
+              width:98%;
+              margin:auto;
+              margin-top:20px;
+              margin-left:auto;
+              margin-right:auto;
+              margin-bottom:auto;
+               border-radius: 15px;
+               border: 5px solid orange;
+               padding-bottom: 55px;
+          }
+		   #Button{
+              width:auto;
+              margin:auto;
+              margin-top:10px;
+              margin-left:auto;
+              margin-right:auto;
+              margin-bottom:10px;
+                    font-size:200%;
+                    color:blue;
+                    border-radius: 13px;
+                    border: 2px solid orange;
+                    transition-duration: 0.4s;
+                    cursor: pointer;
+					display: flex;
+					text-align: center;
+          }
+
+      </style>
+
+        <title></title>
+        <meta charset="windows-1252">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="mqttws31.js" type="text/javascript"></script>
+		<script type="text/javascript">
+        var client;
+		var reconnectTimeout;
+		var host="155.4.118.2";
+		var port=9001;
+		var JSONobj;
+		var jasonfrom;
+		var messageLATLON;
+		
+		
+			  client = new Paho.MQTT.Client(host, port, "");
+			  
+// set callback handlers
+client.onConnectionLost = onConnectionLost;
+client.onMessageArrived = onMessageArrived;
+
+// connect the client
+client.connect({onSuccess:onConnect});
+
+
+// called when the client connects
+function onConnect() {
+  // Once a connection has been made, make a subscription and send a message.
+  console.log("onConnect");
+  
+  client.subscribe("PO");
+  /*
+  message = new Paho.MQTT.Message("Hello ET1544 Students");
+  message.destinationName = "PJ";
+  client.send(message);
+  */
+  
+}
+
+// called when the client loses its connection
+function onConnectionLost(responseObject) {
+  if (responseObject.errorCode !== 0) {
+    console.log("onConnectionLost:"+responseObject.errorMessage);
+	
+  }
+}
+
+// called when a message arrives
+function onMessageArrived(message) {
+  console.log("onMessageArrived:"+message.payloadString);
+	
+	  if(message.payloadString!="ONOFF"){
+  try{
+	  
+                   jsonobj=JSON.parse(message.payloadString);
+				   messageLATLON="http://maps.google.com/maps?q="+String(jsonobj.Latitude)+","+String(jsonobj.Longitude)+"&z=12&output=embed";
+				   console.log(messageLATLON);
+				   document.getElementById("Pos").src=messageLATLON;
+                          jasonfrom =Object.keys(jsonobj).length;  
+
+  
+                                            //onsole.log(evt.data); 
+                                            }catch(err){
+                                                  
+                                                console.log(err); 
+                                            }
+											
+	  }
+ 
+  document.getElementById("Button").onclick = function() {SendOnOFF()};
+  
+ 
+  function SendOnOFF(){
+	  client.subscribe("PO");
+		message = new Paho.MQTT.Message("ONOFF");
+		message.destinationName = "PO";
+		client.send(message);
+  }
+}
+    </script>
+    </head>
+    <body id="Body"> 
+		
+				<div class="mapouter">
+					<div class="gmap_canvas">
+						<iframe id ="Pos" width="1000" height="1000" height="450" width="600"></iframe>
+						<a href="https://embedgooglemap.net/maps/40"></a><br>
+						<style>.mapouter{position:relative;text-align:right;height:1000px;width:1000px;}</style>
+						<a href="https://www.embedgooglemap.net">embedgooglemap.net</a>
+						<style>.gmap_canvas {overflow:hidden;background:none!important;height:1000px;width:1000px;}</style>
+					</div>
+				</div>
+		<button id="Button">Turn ON/OFF</button>
+      
+    </body>
+</html>

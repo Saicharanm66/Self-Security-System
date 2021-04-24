@@ -1,0 +1,40 @@
+File "main_code.py" is the main code to be run on raspberyy pi.
+"IOT_Emergency_Services_Application-main" folder contains files of mobile application which is built using dart programming
+"The emergency contact e-mails and mobile numbers are inbuilt in the code".
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Install Mosquitto MQTT Broker:
+1. SSH into Raspberry Pi and create a new directory for temp files –
+
+	mkdir mosquitto
+	cd mosquitto
+
+2. Import the repository package signing key –
+
+	wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
+	sudo apt-key add mosquitto-repo.gpg.key
+
+3. Make the repository available to apt –
+
+	cd /etc/apt/sources.list.d/
+	sudo wget http://repo.mosquitto.org/debian/mosquitto-wheezy.list
+
+4. Install Mosquitto MQTT Broker –
+
+	apt-get install mosquitto
+
+5. Check Mosquitto Service Status, Process and Default Port (1883) –
+
+	service mosquitto status
+	ps -ef | grep mosq
+	netstat -tln | grep 1883
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+To make code to be run on the boot up, we need to edit rc.local file. To do this, we need to enter following command in linux terminal
+
+-------> sudo nano /etc/rc.local
+
+Now, Add the command shown below to execute the python program, preferably using absolute referencing of the file location (complete file path are preferred).
+Be sure to leave the line exit 0 at the end, then save the file and exit. In nano, to exit, type Ctrl-x, and then Y.
+
+--------> sudo python /home/pi/main_code.py &
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
